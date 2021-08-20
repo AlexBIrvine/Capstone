@@ -10,11 +10,19 @@ def data_prep():
     df = df.drop(columns=['location.city', 'location.country', 'location.latitude', 'location.longitude', 'location.state', 'owner.id', 'airportcity'])
     df = df.dropna(subset=['rating'])
 
-    # Create and populate a dictionary of model-fuel type
+    # Create and populate a dictionary of model-fuel type & list of vehicle age
     model_fuel_dict = {}
+    vehicle_age_list = []
     for index, row in df.iterrows():
+        # Vehicle age
+        vehicle_age_list.append(2021 - row['vehicle.year'])
+
+        # model-fuelType
         if row['vehicle.model'] not in model_fuel_dict and not pd.isna(row['fuelType']):
             model_fuel_dict[row['vehicle.model']] = row['fuelType']
+
+    # Add column for vehicle.age
+    df['vehicle.age'] = vehicle_age_list
 
     # Update rows missing a fuel type where able, drop when unable
     indexes_to_drop = []
@@ -31,9 +39,10 @@ def data_prep():
     
     # Create label columns for string based columns
     le = LabelEncoder()
-    # fuel type
-    # Make
-    # model
-    # vehicle type
+    df['fuelType_cat'] = le.fit_transform(df['fuelType'])
+    df['vehicle.make_cat'] = le.fit_transform(df['vehicle.make'])
+    df['vehicle.model_cat'] = le.fit_transform(df['vehicle.model'])
+    df['vehicle.type_cat'] = le.fit_transform(df['vehicle.type'])
     
-    return df
+    # Overwrite the input data with the cleaned up data
+    df.to_csv('./CarRentalDataCleaned.csv')
