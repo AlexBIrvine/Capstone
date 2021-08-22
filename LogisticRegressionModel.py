@@ -1,16 +1,23 @@
 # Steps: 
 # ------
-# Import data
-# Clean data
-# Split data into training/tests (separate the result from the rest (in our case, ratings))
-# Create a model
-# train model
-# make predictions
-# evaluate and improve
+# Just decide what data to use, drop more columns probably
 
-import numpy as np
+
+
 import pandas as pd
-from matplotlib import pyplot as plt
-from sklearn.cluster import KMeans
+import numpy as np
 import matplotlib.pyplot as plt
-from CSV_tools import data_prep
+import seaborn as sns
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split 
+
+df = pd.read_csv('./CarRentalDataCleaned.csv')
+df.drop(df.columns[[0]], axis=1, inplace=True)
+
+X_train, X_test, y_train, y_test = train_test_split(df.drop(['rating', 'renterTripsTaken', 'recommended'], axis=1), df['recommended'])
+
+LogReg = LogisticRegression()
+LogReg.fit(X_train, y_train)
+
+print(LogReg.predict(np.array([[20, 2, 3, 2,3, 2]]))[0])
+print(LogReg.score(X_test, y_test))
