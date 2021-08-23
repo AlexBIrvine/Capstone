@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import json
 from seaborn import categorical
 from sklearn.preprocessing import LabelEncoder
 
@@ -61,12 +62,25 @@ def data_prep():
     df['vehicle.model_cat'] = le.fit_transform(df['vehicle.model'])
     df['vehicle.type_cat'] = le.fit_transform(df['vehicle.type'])
 
+    # Drop catelogical columns we no longer need
+    # df = df.drop(columns=['fuelType', 'vehicle.make', 'vehicle.model', 'vehicle.type','vehicle.year'])
+
+    # Save as CSV file
+    df.to_csv('./CarRentalDataCleaned.csv')
+
+
+def create_catelogical_json():
+    # Read in cleaned data
+    df = pd.read_csv('./CarRentalDataCleaned.csv')
+
     # Create dictionaries of catelogical values
     fuel_types = {}
     vehicle_makes = {}
     vehicle_models = {}
     vehicle_types = {}
     model_to_make = {}
+    model_to_vType = {}
+    model_to_fType = {}
 
     for i, row in df.iterrows():
         if row['fuelType_cat'] not in fuel_types: 
@@ -78,6 +92,8 @@ def data_prep():
         if row['vehicle.model_cat'] not in vehicle_models:
             vehicle_models[row['vehicle.model_cat']] = row['vehicle.model']
             model_to_make[row['vehicle.model_cat']]  = row['vehicle.make_cat']
+            model_to_vType[row['vehicle.model_cat']] = row['vehicle.type_cat']
+            model_to_fType[row['vehicle.model_cat']] = row['fuelType_cat']
 
         if row['vehicle.type_cat'] not in vehicle_types:
             vehicle_types[row['vehicle.type_cat']] = row['vehicle.type']
@@ -88,9 +104,13 @@ def data_prep():
     categorical_values['vehicle_models'] = vehicle_models
     categorical_values['vehicle_types'] = vehicle_types
     categorical_values['model_to_make'] = model_to_make
+    categorical_values['model_to_vType'] = model_to_vType
+    categorical_values['model_to_fType'] = model_to_fType
 
-    # Drop catelogical columns we no longer need
-    df = df.drop(columns=['fuelType', 'vehicle.make', 'vehicle.model', 'vehicle.type','vehicle.year'])
+    # Save dictionary to file
+    with open("categorical_values.json", "w") as output:
+        json.dump(categorical_values, output)
 
-    # Overwrite the input data with the cleaned up data
-    df.to_csv('./CarRentalDataCleaned.csv')
+def get_catelogical_dict():
+    with open('categorical_values.json') as json_file:
+        return json.load(json_file)

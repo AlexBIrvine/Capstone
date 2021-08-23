@@ -9,8 +9,8 @@ class Main_Window(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Sets the size to 80% of available screenspace & centers it
-        screenPercent = 1.2
+        # Sets the size to 50% of available screenspace & centers it
+        screenPercent = 1.5
         self.resize(self.screen().availableGeometry().size().width()/screenPercent, 
                     self.screen().availableGeometry().size().height()/screenPercent)
         self.center()
@@ -19,8 +19,8 @@ class Main_Window(QWidget):
         tabs = QTabWidget()
         tab1 = KMeansTab()
         tab2 = LogisticRegressionTab()
-        tabs.addTab(tab1, "Tab 1")
-        tabs.addTab(tab2, "Tab 2")
+        tabs.addTab(tab1, "K-Means Clusters")
+        tabs.addTab(tab2, "Recommended Vehicle Prediction")
         vbox.addWidget(tabs)
 
         self.setLayout(vbox)

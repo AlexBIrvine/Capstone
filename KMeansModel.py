@@ -3,11 +3,12 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
-from CSV_tools import data_prep, categorical_values
+from CSV_tools import data_prep, get_catelogical_dict, create_catelogical_json
 
 import json
 
 data_prep()
+create_catelogical_json()
 
 cluster_d = {}
 
@@ -51,8 +52,8 @@ cluster_df = pd.DataFrame(data=cluster_d)
 
 cluster_df.to_csv('./CarRentalDataClusters.csv')
 
-print(categorical_values['vehicle_models']["civic"])
-# print(json.dumps(dictt, sort_keys=True, indent=4))
-# print(df)
+# print(categorical_values['vehicle_models']["civic"])
+print(json.dumps(get_catelogical_dict(), sort_keys=True, indent=4))
+print(df)
 
 # civic
