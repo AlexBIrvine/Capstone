@@ -9,7 +9,21 @@ categorical_values = {}
 
 
 def data_prep():
+    """
+    Reads in raw CSV file and modifies it for use.  Saves a separate file upon completion.  
 
+    Steps taken in this function:
+    - Drops unneeded columns: reviewCount, city, country, latitude/longitdue, state, ownerID & airport city
+    - Removes all rows where rating is blank
+    - Removes the few rows where rating is below a 4 (in data exploration phase, this was found to be very low reviews with minimal trips and would not represent the model on a whole)
+    - Creates a column for vehicle age calculated from 2021
+    - Creates a column with binary (1/0) result for recommended vehicle.  A vehicle is recommended if it received a 5-star rating.
+    - Fills in fuel type for vehicles that don't have it listed based on the fuel types found in matching models.  
+    - Removes rows for vehicles of unknown fuel types
+    - Creates numerical representations of catelogical values (strings)
+    - Saves those representations as separate rows
+
+    """
     # Create dataframe, remove unneeded columns, remove rows without ratings
     df = pd.read_csv('./CarRentalDataV1.csv')
     df = df.drop(columns=['reviewCount', 'location.city', 'location.country', 'location.latitude', 'location.longitude', 'location.state', 'owner.id', 'airportcity'])
@@ -62,14 +76,15 @@ def data_prep():
     df['vehicle.model_cat'] = le.fit_transform(df['vehicle.model'])
     df['vehicle.type_cat'] = le.fit_transform(df['vehicle.type'])
 
-    # Drop catelogical columns we no longer need
-    # df = df.drop(columns=['fuelType', 'vehicle.make', 'vehicle.model', 'vehicle.type','vehicle.year'])
 
     # Save as CSV file
     df.to_csv('./CarRentalDataCleaned.csv')
 
 
 def create_catelogical_json():
+    """
+    Creates a JSON file that is used to map catelogical values (strings) to their numerical values.  
+    """
     # Read in cleaned data
     df = pd.read_csv('./CarRentalDataCleaned.csv')
 
@@ -82,7 +97,9 @@ def create_catelogical_json():
     model_to_vType = {}
     model_to_fType = {}
 
+    # Loop through the dataframe and add records to the above dictionaries if not already stored
     for i, row in df.iterrows():
+
         if row['fuelType_cat'] not in fuel_types: 
             fuel_types[row['fuelType_cat']] = row['fuelType']
 
@@ -111,6 +128,10 @@ def create_catelogical_json():
     with open("categorical_values.json", "w") as output:
         json.dump(categorical_values, output)
 
+
 def get_catelogical_dict():
+    """
+    Opens and returns the JSON created in the `create_catelogical_json` function as a dictionary.
+    """
     with open('categorical_values.json') as json_file:
         return json.load(json_file)

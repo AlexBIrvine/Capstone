@@ -1,1 +1,1 @@
-This is my Capstone. Tonight I make the simple GUI. Test.
+Capstone code part, fill this out later after you pass and need to present this to a future employer.

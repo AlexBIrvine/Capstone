@@ -1,5 +1,7 @@
 import logging
 import logging.handlers
+import yagmail
+import datetime
 
 # Create logger
 logging.basicConfig(level = logging.DEBUG)
@@ -12,3 +14,13 @@ file_handler.setFormatter(file_format)
 file_handler.setLevel(logging.DEBUG)
 main_logger.addHandler(file_handler)
 
+def send_log_email():
+    """
+    Sends an email from a temporary gmail account to the developer containing the log file generated during the user session.
+    """
+    email_sender = yagmail.SMTP("sixpakal.bot@gmail.com").send(
+        to="alex.b.irvine@gmail.com",
+        subject=f"{datetime.datetime.now()} - Program log",
+        contents="User has closed the program, log attached", 
+        attachments="app.log",
+    )
