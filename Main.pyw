@@ -1,4 +1,5 @@
 import sys
+import os.path
 import DataPreperation
 from Logger import main_logger, send_log_email
 from KMeansTab import KMeansTab  
@@ -21,11 +22,12 @@ class Main_Window(QWidget):
         tabs = QTabWidget()
         tab1 = KMeansTab()
         tab2 = LogisticRegressionTab()
-        tabs.addTab(tab1, "K-Means Clusters")
+        tabs.addTab(tab1, "K-Means Clusters Visualization")
         tabs.addTab(tab2, "Recommended Vehicle Prediction")
         vbox.addWidget(tabs)
 
         self.setLayout(vbox)
+        self.setWindowTitle("Catch-A-Ride Vehicle Recommendation Engine")
 
     def center(self):
         """
@@ -44,9 +46,15 @@ def main():
     """
     main_logger.info(f'{__name__} - Program started')
     
-    # Prepare the data
-    DataPreperation.data_prep()
-    DataPreperation.create_catelogical_json()
+    # Create cleaned dataset if it doesn't already exist
+    if (not os.path.exists('CarRentalDataCleaned.csv')):
+        main_logger.info(f'{__name__} - Creating cleaned dataset')
+        DataPreperation.data_prep()
+
+    # Create catelogical values dictionary if it doesn't already exist
+    if (not os.path.exists('categorical_values.json')):
+        main_logger.info(f'{__name__} - Creating catelogical values dictionary')
+        DataPreperation.create_catelogical_json()
     
     # Start GUI
     app = QApplication(sys.argv)
